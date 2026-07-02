@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Helper - Excel Comparison Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="url(#paint1_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="url(#paint2_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="paint0_linear" x1="2" y1="7" x2="22" y2="7" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6366f1"/>
+                            <stop offset="1" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                        <linearGradient id="paint1_linear" x1="2" y1="19.5" x2="22" y2="19.5" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6366f1"/>
+                            <stop offset="1" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                        <linearGradient id="paint2_linear" x1="2" y1="14.5" x2="22" y2="14.5" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#6366f1"/>
+                            <stop offset="1" stop-color="#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>Salesforce Helper</h1>
+            </div>
+            <button class="theme-toggle btn-icon" id="themeToggle" aria-label="Toggle theme">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="moon-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <main class="app-content">
+            <!-- Top Navigation -->
+            <div class="top-nav" id="topNav">
+                <button class="top-nav-btn active" data-target="app-comparator">Excel Comparison</button>
+                <button class="top-nav-btn" data-target="app-formatter">SOQL Data Formatter</button>
+            </div>
+
+            <!-- EXCEL COMPARATOR APP -->
+            <div id="app-comparator">
+                <!-- Step 1: Data Input -->
+                <section class="section" id="step1">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title">
+                            <span class="step-indicator">1</span>
+                            Provide Datasets
+                        </h2>
+                        <p class="section-subtitle">Paste your Excel data below or drag & drop files (.csv, .xlsx)</p>
+                    </div>
+
+                    <div class="grid-2">
+                        <!-- Dataset 1 -->
+                        <div class="glass-panel" id="panel1">
+                            <div class="flex-between mb-2">
+                                <h3 class="font-600">Old Data (Dataset 1)</h3>
+                                <button class="btn btn-sm btn-secondary hidden" id="clear1">Clear</button>
+                            </div>
+                            <div class="paste-zone" id="dropzone1">
+                                <textarea class="textarea-paste" id="input1" placeholder="Paste Old Data Here..."></textarea>
+                                <div class="paste-overlay hidden">
+                                    <span class="badge" id="badge1">0 rows</span>
+                                </div>
+                            </div>
+                            <div class="data-preview mt-4 hidden" id="preview1">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table" id="table1">
+                                        <thead><tr></tr></thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dataset 2 -->
+                        <div class="glass-panel" id="panel2">
+                            <div class="flex-between mb-2">
+                                <h3 class="font-600">New Data (Dataset 2)</h3>
+                                <button class="btn btn-sm btn-secondary hidden" id="clear2">Clear</button>
+                            </div>
+                            <div class="paste-zone" id="dropzone2">
+                                <textarea class="textarea-paste" id="input2" placeholder="Paste New Data Here..."></textarea>
+                                <div class="paste-overlay hidden">
+                                    <span class="badge" id="badge2">0 rows</span>
+                                </div>
+                            </div>
+                            <div class="data-preview mt-4 hidden" id="preview2">
+                                <div class="data-table-wrapper">
+                                    <table class="data-table" id="table2">
+                                        <thead><tr></tr></thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 2: Mapping Configuration -->
+                <section class="section mapping-section hidden" id="step2">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title">
+                            <span class="step-indicator">2</span>
+                            Configure Mapping
+                        </h2>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="mapping-row mb-4">
+                            <div class="mapping-label">Match Dataset 1 by:</div>
+                            <select class="select flex-grow" id="lookup1"></select>
+                            <div class="arrow-icon">→</div>
+                            <div class="mapping-label">With Dataset 2 by:</div>
+                            <select class="select flex-grow" id="lookup2"></select>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="flex-between mb-2">
+                                <div class="mapping-label">Fields to Compare:</div>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-secondary" id="selectAllFields">Select All</button>
+                                    <button class="btn btn-sm btn-secondary" id="deselectAllFields">Deselect All</button>
+                                </div>
+                            </div>
+                            <div class="chip-container" id="compareFields">
+                                <!-- Chips will be inserted here -->
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <button class="btn btn-primary btn-compare" id="btnCompare">
+                                Run Comparison
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Step 3: Results -->
+                <section class="section results-section hidden" id="step3">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title">
+                            <span class="step-indicator">3</span>
+                            Results Dashboard
+                        </h2>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="grid-6 mb-6">
+                        <div class="summary-card blue">
+                            <div class="card-icon">📊</div>
+                            <div class="card-title">Total Old Records</div>
+                            <div class="card-value" id="valTotal1">0</div>
+                        </div>
+                        <div class="summary-card blue">
+                            <div class="card-icon">📊</div>
+                            <div class="card-title">Total New Records</div>
+                            <div class="card-value" id="valTotal2">0</div>
+                        </div>
+                        <div class="summary-card green">
+                            <div class="card-icon">✅</div>
+                            <div class="card-title">Matched Perfectly</div>
+                            <div class="card-value" id="valMatched">0</div>
+                        </div>
+                        <div class="summary-card yellow">
+                            <div class="card-icon">🔄</div>
+                            <div class="card-title">Changed Records</div>
+                            <div class="card-value" id="valChanged">0</div>
+                        </div>
+                        <div class="summary-card red">
+                            <div class="card-icon">❌</div>
+                            <div class="card-title">Missing in New</div>
+                            <div class="card-value" id="valMissingNew">0</div>
+                        </div>
+                        <div class="summary-card orange">
+                            <div class="card-icon">✨</div>
+                            <div class="card-title">New Records</div>
+                            <div class="card-value" id="valNew">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Detail Tabs -->
+                    <div class="glass-panel">
+                        <div class="flex-between mb-4 flex-wrap gap-4">
+                            <div class="tabs tab-nav" id="resultTabs">
+                                <button class="tab-btn active" data-target="tabChanged">
+                                    Changed <span class="badge" id="badgeChanged">0</span>
+                                </button>
+                                <button class="tab-btn" data-target="tabMatched">
+                                    Matched <span class="badge" id="badgeMatched">0</span>
+                                </button>
+                                <button class="tab-btn" data-target="tabMissingNew">
+                                    Missing <span class="badge" id="badgeMissingNew">0</span>
+                                </button>
+                                <button class="tab-btn" data-target="tabNew">
+                                    New <span class="badge" id="badgeNew">0</span>
+                                </button>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="exportCsv">Export CSV</button>
+                                <button class="btn btn-primary" id="exportExcel">Export Excel</button>
+                            </div>
+                        </div>
+
+                        <div class="tab-content active" id="tabChanged">
+                            <div class="data-table-wrapper">
+                                <table class="data-table" id="tableChanged">
+                                    <thead>
+                                        <tr>
+                                            <th id="thChangedId">ID</th>
+                                            <th>Field</th>
+                                            <th>Old Value</th>
+                                            <th>New Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="tabMatched">
+                            <div class="data-table-wrapper">
+                                <table class="data-table" id="tableMatched">
+                                    <thead><tr></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="tabMissingNew">
+                            <div class="data-table-wrapper">
+                                <table class="data-table" id="tableMissingNew">
+                                    <thead><tr></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-content hidden" id="tabNew">
+                            <div class="data-table-wrapper">
+                                <table class="data-table" id="tableNew">
+                                    <thead><tr></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- SOQL FORMATTER APP -->
+            <div id="app-formatter" class="hidden">
+                <section class="section" id="formatter-input-section">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title">
+                            Provide Data for Formatting
+                        </h2>
+                        <p class="section-subtitle">Paste your Salesforce query results, CSV, or Excel data here</p>
+                    </div>
+
+                    <div class="glass-panel mb-6" id="panelFmt">
+                        <div class="flex-between mb-2">
+                            <h3 class="font-600">Raw Data</h3>
+                            <button class="btn btn-sm btn-secondary hidden" id="clearFmt">Clear</button>
+                        </div>
+                        <div class="paste-zone" id="dropzoneFmt">
+                            <textarea class="textarea-paste" id="inputFmt" placeholder="Paste data here..."></textarea>
+                            <div class="paste-overlay hidden">
+                                <span class="badge" id="badgeFmt">0 rows</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section formatter-layout hidden" id="formatter-workspace">
+                    <!-- Left Sidebar Controls -->
+                    <div class="glass-panel sidebar-controls">
+                        <div class="control-group">
+                            <label class="control-label">Select Columns</label>
+                            <div class="checkbox-list" id="fmtColumns">
+                                <!-- Populated by JS -->
+                            </div>
+                            <label class="toggle-item mt-3">
+                                Include Headers
+                                <input type="checkbox" id="fmtIncludeHeaders" checked>
+                            </label>
+                            <label class="toggle-item">
+                                Align Columns (Pad with spaces)
+                                <input type="checkbox" id="fmtAlignColumns" checked>
+                            </label>
+                            <div class="mt-2">
+                                <label class="control-label" style="font-size: 0.75rem;">Column Delimiter (for multiple cols)</label>
+                                <input type="text" class="input" id="fmtColDelimiter" value=" - " placeholder="e.g. , or |">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Text Wrapper</label>
+                            <select class="select mb-2" id="fmtWrapper">
+                                <option value="none">No wrapper</option>
+                                <option value="single">Single Quotes ('x')</option>
+                                <option value="double">Double Quotes ("x")</option>
+                                <option value="soql">SOQL IN ('x', 'y')</option>
+                                <option value="custom">Custom Wrapper</option>
+                            </select>
+                            <div id="fmtWrapperCustom" class="hidden flex gap-2">
+                                <input type="text" class="input" id="fmtWrapStart" placeholder="Start (e.g. [)">
+                                <input type="text" class="input" id="fmtWrapEnd" placeholder="End (e.g. ])">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Separator</label>
+                            <select class="select mb-2" id="fmtSeparator">
+                                <option value="newline">New Line</option>
+                                <option value="comma">Comma (,)</option>
+                                <option value="semicolon">Semicolon (;)</option>
+                                <option value="space">Space</option>
+                                <option value="custom">Custom Separator</option>
+                            </select>
+                            <div id="fmtSeparatorCustom" class="hidden">
+                                <input type="text" class="input" id="fmtSepText" placeholder="Separator (e.g. |)">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">Text Cleanup & Modifiers</label>
+                            
+                            <div class="mb-3">
+                                <input type="text" class="input mb-2" id="fmtRemovePrefix" placeholder="Remove Prefix (e.g. ABC)">
+                                <input type="text" class="input mb-2" id="fmtRemoveSuffix" placeholder="Remove Suffix (e.g. _TEST)">
+                            </div>
+
+                            <div class="flex gap-2 mb-3">
+                                <input type="number" class="input" id="fmtRemoveFirstN" placeholder="Rm First N chars" min="0">
+                                <input type="number" class="input" id="fmtRemoveLastN" placeholder="Rm Last N chars" min="0">
+                            </div>
+
+                            <div class="flex gap-2 mb-3">
+                                <input type="text" class="input" id="fmtReplaceFind" placeholder="Find">
+                                <input type="text" class="input" id="fmtReplaceWith" placeholder="Replace">
+                            </div>
+
+                            <label class="toggle-item">
+                                Trim Spaces
+                                <input type="checkbox" id="fmtTrim" checked>
+                            </label>
+                            <label class="toggle-item">
+                                Remove All Spaces
+                                <input type="checkbox" id="fmtRemoveSpaces">
+                            </label>
+                            <label class="toggle-item">
+                                Remove Blank Rows
+                                <input type="checkbox" id="fmtRemoveBlank" checked>
+                            </label>
+                            <label class="toggle-item">
+                                Remove Duplicates
+                                <input type="checkbox" id="fmtRemoveDupes">
+                            </label>
+                            <label class="toggle-item">
+                                Remove Special Chars
+                                <input type="checkbox" id="fmtRemoveSpecial">
+                            </label>
+
+                            <select class="select mt-2" id="fmtCasing">
+                                <option value="none">Original Casing</option>
+                                <option value="upper">UPPERCASE</option>
+                                <option value="lower">lowercase</option>
+                            </select>
+
+                            <select class="select mt-2" id="fmtSort">
+                                <option value="none">Original Order</option>
+                                <option value="asc">Sort A → Z</option>
+                                <option value="desc">Sort Z → A</option>
+                                <option value="reverse">Reverse Order</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Content Preview -->
+                    <div class="glass-panel preview-container">
+                        <div class="preview-header">
+                            <div>
+                                <h3 class="font-600">Live Preview</h3>
+                                <p class="text-sm text-tertiary" id="fmtPreviewNote">Showing first 5,000 rows</p>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="fmtExportCsv">CSV</button>
+                                <button class="btn btn-secondary" id="fmtExportTxt">TXT</button>
+                                <button class="btn btn-secondary" id="fmtExportExcel">Excel</button>
+                                <button class="btn btn-primary" id="fmtCopyExcelBtn">Copy for Excel</button>
+                                <button class="btn btn-primary" id="fmtCopyBtn">Copy Text</button>
+                            </div>
+                        </div>
+                        <textarea class="textarea-code" id="fmtOutput" readonly placeholder="Output will appear here..."></textarea>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="js/parser.js"></script>
+    <script src="js/comparator.js"></script>
+    <script src="js/exporter.js"></script>
+    <script src="js/mapper.js"></script>
+    <script src="js/formatter.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
