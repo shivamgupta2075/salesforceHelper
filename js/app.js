@@ -41,12 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // -- Initialization --
     Mapper.init();
     if (window.Formatter) Formatter.init();
+    if (window.DiffNow) DiffNow.init();
 
     // -- Top Navigation Logic --
     const topNavBtns = document.querySelectorAll('.top-nav-btn');
     const apps = {
         'app-comparator': document.getElementById('app-comparator'),
-        'app-formatter': document.getElementById('app-formatter')
+        'app-formatter': document.getElementById('app-formatter'),
+        'app-diffnow': document.getElementById('app-diffnow')
     };
 
     topNavBtns.forEach(btn => {

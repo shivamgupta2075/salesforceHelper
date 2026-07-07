@@ -58,6 +58,7 @@
             <div class="top-nav" id="topNav">
                 <button class="top-nav-btn active" data-target="app-comparator">Excel Comparison</button>
                 <button class="top-nav-btn" data-target="app-formatter">SOQL Data Formatter</button>
+                <button class="top-nav-btn" data-target="app-diffnow">DiffNow</button>
             </div>
 
             <!-- EXCEL COMPARATOR APP -->
@@ -418,6 +419,107 @@
                     </div>
                 </section>
             </div>
+
+            <!-- DIFFNOW APP -->
+            <div id="app-diffnow" class="hidden">
+                <section class="section">
+                    <div class="section-header mb-4">
+                        <h2 class="section-title">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#diff-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <defs>
+                                    <linearGradient id="diff-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#6366f1"/>
+                                        <stop offset="1" stop-color="#8b5cf6"/>
+                                    </linearGradient>
+                                </defs>
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                            DiffNow — Code Comparison
+                        </h2>
+                        <p class="section-subtitle">Paste any code (Apex, JavaScript, SQL, etc.) to see a line-by-line diff</p>
+                    </div>
+
+                    <!-- Input panels -->
+                    <div class="diffnow-input-grid">
+                        <div class="glass-panel">
+                            <div class="flex-between mb-2">
+                                <h3 class="font-600">Old Code</h3>
+                                <button class="btn btn-sm btn-secondary" id="diffClearOld">Clear</button>
+                            </div>
+                            <textarea class="textarea-code" id="diffOldCode" placeholder="Paste old / original code here..."></textarea>
+                        </div>
+                        <div class="glass-panel">
+                            <div class="flex-between mb-2">
+                                <h3 class="font-600">New Code</h3>
+                                <button class="btn btn-sm btn-secondary" id="diffClearNew">Clear</button>
+                            </div>
+                            <textarea class="textarea-code" id="diffNewCode" placeholder="Paste new / updated code here..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Compare Button -->
+                    <div class="diff-compare-btn-wrap">
+                        <button class="btn btn-primary btn-compare" id="btnDiffCompare">
+                            ⚡ Compare
+                        </button>
+                    </div>
+
+                    <!-- Results area (hidden until comparison runs) -->
+                    <div id="diffResults" class="hidden">
+                        <!-- Stats Bar -->
+                        <div class="diff-stats-bar" id="diffStatsBar">
+                            <span style="font-weight:700; color: var(--text-primary); margin-right: var(--space-2);">Diff Summary:</span>
+                            <span class="diff-stat added">
+                                <span class="diff-stat-dot"></span>
+                                <span id="diffStatAdded">0</span> added
+                            </span>
+                            <span class="diff-stat removed">
+                                <span class="diff-stat-dot"></span>
+                                <span id="diffStatRemoved">0</span> removed
+                            </span>
+                            <span class="diff-stat unchanged">
+                                <span class="diff-stat-dot"></span>
+                                <span id="diffStatUnchanged">0</span> unchanged
+                            </span>
+                            <div style="margin-left: auto;" class="flex gap-2 align-items-center">
+                                <div class="diff-view-toggle">
+                                    <button class="diff-view-toggle-btn active" id="diffViewUnified" title="Unified View">Unified</button>
+                                    <button class="diff-view-toggle-btn" id="diffViewSplit" title="Side-by-side View">Split</button>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" id="diffCopyBtn">Copy Diff</button>
+                            </div>
+                        </div>
+
+                        <!-- Diff Output -->
+                        <div class="glass-panel" style="padding: 0; overflow: hidden;">
+                            <!-- Unified view -->
+                            <div id="diffUnifiedView">
+                                <div class="diff-viewer">
+                                    <div class="diff-viewer-header">
+                                        <span style="text-align:right;">Line</span>
+                                        <span style="text-align:center;">&Delta;</span>
+                                        <span>Code</span>
+                                    </div>
+                                    <div class="diff-viewer-body" id="diffUnifiedBody"></div>
+                                </div>
+                            </div>
+                            <!-- Split view -->
+                            <div id="diffSplitView" class="hidden">
+                                <div class="diff-viewer">
+                                    <div class="diff-viewer-header" style="grid-template-columns: 48px 1fr 48px 1fr;">
+                                        <span style="text-align:right;">L#</span>
+                                        <span>Old Code</span>
+                                        <span style="text-align:right;">L#</span>
+                                        <span>New Code</span>
+                                    </div>
+                                    <div class="diff-viewer-body" id="diffSplitBody"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
@@ -431,6 +533,7 @@
     <script src="js/exporter.js"></script>
     <script src="js/mapper.js"></script>
     <script src="js/formatter.js"></script>
+    <script src="js/diffnow.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
