@@ -1,10 +1,7 @@
 /**
  * sfperms.js
- * Salesforce Object Permissions Viewer — Analysis Engine & UI Controller
- *
- * Connects to a live Salesforce org via SfAuth, lets the admin select a user
- * and one or more objects, then traces every CRUD + FLS permission back to
- * its source (Profile, Permission Set, or Permission Set Group).
+ * Salesforce Object Permissions Viewer — CLI Token Engine & UI Controller
+ * Dedicated for GitHub Live Static Sites without Org modifications.
  *
  * Exposed as window.SfPerms
  */
@@ -245,9 +242,6 @@
   function cacheDOMElements() {
     _el.connectPanel        = document.getElementById('sfpConnectPanel');
     _el.mainPanel           = document.getElementById('sfpMainPanel');
-    _el.clientIdInput       = document.getElementById('sfpClientId');
-    _el.sandboxCheck        = document.getElementById('sfpSandbox');
-    _el.btnConnect          = document.getElementById('sfpBtnConnect');
     _el.manualTokenInput    = document.getElementById('sfpManualToken');
     _el.manualInstanceInput = document.getElementById('sfpManualInstance');
     _el.btnManualConnect    = document.getElementById('sfpBtnManualConnect');
@@ -270,38 +264,32 @@
   }
 
   function bindEvents() {
-    if (!_el.btnConnect) return;
+    if (!_el.btnManualConnect) return;
 
-    _el.btnConnect.addEventListener('click', handleConnect);
     _el.btnManualConnect.addEventListener('click', handleManualConnect);
     _el.btnDisconnect.addEventListener('click', handleDisconnect);
+    
     _el.manualTokenInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') handleManualConnect();
     });
+    
     _el.userSearch.addEventListener('input', function () {
       clearTimeout(_searchTimer);
       _searchTimer = setTimeout(handleUserSearch, 400);
     });
+    
     _el.objectFilter.addEventListener('input', filterObjectList);
     _el.selectAllObjs.addEventListener('click', function () { toggleAllObjects(true); });
     _el.deselectAllObjs.addEventListener('click', function () { toggleAllObjects(false); });
     _el.btnAnalyze.addEventListener('click', handleAnalyze);
     _el.btnExportCsv.addEventListener('click', exportCSV);
     _el.btnExportExcel.addEventListener('click', exportExcel);
-
-    var config = SfAuth.getConfig();
-    if (_el.clientIdInput && config.clientId) {
-      _el.clientIdInput.value = config.clientId;
-    }
-    if (_el.sandboxCheck) {
-      _el.sandboxCheck.checked = config.isSandbox;
-    }
   }
 
   // ─── Auth State ─────────────────────────────────────────────────────────
 
   function checkAuthState() {
-    if (SfAuth.isAuthenticated()) {
+    if (window.SfAuth && SfAuth.isAuthenticated && SfAuth.isAuthenticated()) {
       showMainPanel();
       loadObjectList();
       updateAuthBar();
@@ -321,36 +309,12 @@
   }
 
   function updateAuthBar() {
-    var instanceUrl = SfAuth.getInstanceUrl() || '';
-    _el.authBarInstance.textContent = instanceUrl.replace(/https?:\/\//, '').replace(/\/+$/, '');
-    _el.authBarUser.textContent = 'Connected';
+    var instanceUrl = (window.SfAuth && SfAuth.getInstanceUrl) ? SfAuth.getInstanceUrl() : '';
+    _el.authBarInstance.textContent = instanceUrl ? instanceUrl.replace(/https?:\/\//, '').replace(/\/+$/, '') : 'CLI Session';
+    _el.authBarUser.textContent = 'Active Org Connected';
   }
 
-  // ─── Connect Handlers ───────────────────────────────────────────────────
-
-  function handleConnect() {
-    var clientId  = _el.clientIdInput.value.trim();
-    var isSandbox = _el.sandboxCheck.checked;
-    if (!clientId) {
-      toast('Please enter your Connected App Client ID (Consumer Key).', 'error');
-      return;
-    }
-    SfAuth.saveConfig(clientId, isSandbox);
-    _el.btnConnect.disabled = true;
-    _el.btnConnect.textContent = 'Connecting…';
-
-    SfAuth.connect(clientId, isSandbox).then(function () {
-      toast('Connected successfully!', 'success');
-      showMainPanel();
-      updateAuthBar();
-      loadObjectList();
-    }).catch(function (err) {
-      toast('Connection failed: ' + err.message, 'error');
-    }).finally(function () {
-      _el.btnConnect.disabled = false;
-      _el.btnConnect.textContent = 'Connect with Salesforce';
-    });
-  }
+  // ─── CLI Connection Handler ──────────────────────────────────────────────
 
   function handleManualConnect() {
     var token       = _el.manualTokenInput.value.trim();
@@ -359,24 +323,25 @@
       toast('Please provide both the access token and instance URL.', 'error');
       return;
     }
+    
     _el.btnManualConnect.disabled = true;
-    _el.btnManualConnect.textContent = 'Connecting…';
+    _el.btnManualConnect.textContent = 'Connecting via REST API…';
 
-    SfAuth.connectManual(token, instanceUrl).then(function () {
-      toast('Connected successfully via manual token!', 'success');
+    window.SfAuth.connectManual(token, instanceUrl).then(function () {
+      toast('Org synchronized successfully via CLI Token!', 'success');
       showMainPanel();
       updateAuthBar();
       loadObjectList();
     }).catch(function (err) {
-      toast('Connection failed: ' + err.message, 'error');
+      toast('REST Connection failed: ' + err.message, 'error');
     }).finally(function () {
       _el.btnManualConnect.disabled = false;
-      _el.btnManualConnect.textContent = 'Connect';
+      _el.btnManualConnect.textContent = 'Connect to Salesforce Org';
     });
   }
 
   function handleDisconnect() {
-    SfAuth.disconnect();
+    if (window.SfAuth && SfAuth.disconnect) SfAuth.disconnect();
     _state = {
       objects: [], selectedUserId: null, selectedUserLabel: '',
       selectedObjects: [], analysisResults: [], sourceMap: {}, fieldPermsCache: {}
@@ -387,14 +352,14 @@
     _el.selectedUser.textContent = 'No user selected';
     _el.objectList.innerHTML = '<p class="text-tertiary text-sm" style="padding:1rem;">Please connect to a Salesforce org first.</p>';
     showConnectPanel();
-    toast('Disconnected.', 'info');
+    toast('Disconnected safely.', 'info');
   }
 
   // ─── Object List Loading ────────────────────────────────────────────────
 
   function loadObjectList() {
-    _el.objectList.innerHTML = '<p class="text-tertiary text-sm" style="padding:0.5rem;">Loading objects…</p>';
-    SfAuth.loadObjects().then(function (objects) {
+    _el.objectList.innerHTML = '<p class="text-tertiary text-sm" style="padding:0.5rem;">Loading objects metadata…</p>';
+    window.SfAuth.loadObjects().then(function (objects) {
       _state.objects = objects;
       renderObjectList(objects);
     }).catch(function (err) {
@@ -428,7 +393,7 @@
 
   function toggleAllObjects(selected) {
     var checkboxes = _el.objectList.querySelectorAll('input[type="checkbox"]');
-    checkboxboxes.forEach(function (cb) {
+    checkboxes.forEach(function (cb) {
       cb.checked = selected;
     });
   }
@@ -450,8 +415,8 @@
       _el.userResults.innerHTML = '';
       return;
     }
-    _el.userResults.innerHTML = '<p class="text-sm text-tertiary" style="padding:0.5rem;">Searching…</p>';
-    SfAuth.searchUsers(term).then(function (users) {
+    _el.userResults.innerHTML = '<p class="text-sm text-tertiary" style="padding:0.5rem;">Searching Org Users…</p>';
+    window.SfAuth.searchUsers(term).then(function (users) {
       renderUserResults(users);
     }).catch(function (err) {
       _el.userResults.innerHTML = '<p class="text-sm" style="color:var(--color-error);padding:0.5rem;">Search error: ' + err.message + '</p>';
@@ -461,7 +426,7 @@
   function renderUserResults(users) {
     _el.userResults.innerHTML = '';
     if (users.length === 0) {
-      _el.userResults.innerHTML = '<p class="text-sm text-tertiary" style="padding:0.5rem;">No users found.</p>';
+      _el.userResults.innerHTML = '<p class="text-sm text-tertiary" style="padding:0.5rem;">No active users found.</p>';
       return;
     }
     users.forEach(function (user) {
@@ -509,7 +474,6 @@
         return analyzePermissions(_state.selectedUserId, names);
       })
       .then(function (results) {
-        // Sequentially cache FLS data for chosen objects
         var permSetIds = Object.keys(_state.sourceMap);
         var flsPromises = results.map(function (res) {
           return fetchFieldPerms(res.objectName, permSetIds).then(function (fields) {
@@ -549,7 +513,6 @@
       var card = document.createElement('div');
       card.className = 'glass-panel p-5 sfp-object-card';
 
-      // Roll up values to see if any source granted the access
       var summary = { read: false, create: false, edit: false, 'delete': false, viewAll: false, modifyAll: false };
       
       res.crudSources.forEach(function (src) {
@@ -567,15 +530,12 @@
                  (res.tabVisible ? '<span class="text-success font-500">Visible</span>' : '<span class="text-danger font-500">Hidden</span>') + 
                  '</p></div></div>';
 
-      // Build Matrix cells
       html += '<div class="sfp-matrix-grid">';
       var matrixKeys = ['read', 'create', 'edit', 'delete', 'viewAll', 'modifyAll'];
       var matrixLabels = ['READ', 'CREATE', 'EDIT', 'DELETE', 'VIEW ALL', 'MODIFY ALL'];
 
       matrixKeys.forEach(function (key, idx) {
         var isGranted = summary[key];
-        
-        // Find sources that contributed to this perm for the tooltip
         var accurateSources = [];
         res.crudSources.forEach(function (src) {
           if (src[key]) {
@@ -595,10 +555,8 @@
       });
       html += '</div>';
 
-      // Attach FLS fields matrix
       var fieldPerms = _state.fieldPermsCache[res.objectName] || [];
       if (fieldPerms.length > 0) {
-        // Rollup field-level rules securely
         var rolledFields = {};
         fieldPerms.forEach(function (f) {
           if (!rolledFields[f.field]) {
@@ -672,7 +630,6 @@
         ]);
       });
 
-      // Tab visibility row
       var tabSources = res.tabSources.map(function (ts) {
         var meta = _state.sourceMap[ts.permSetId];
         return meta ? '[' + meta.type + '] ' + meta.label : ts.permSetId;
@@ -702,7 +659,7 @@
       return;
     }
     if (!window.XLSX) {
-      toast('SheetJS Engine (xlsx.full.min.js) missing.', 'error');
+      toast('SheetJS Engine missing.', 'error');
       return;
     }
 
@@ -734,7 +691,6 @@
 
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), 'Object Summary');
 
-    // Create detailed tabs for FLS
     _state.analysisResults.forEach(function (res) {
       var fieldPerms = _state.fieldPermsCache[res.objectName] || [];
       if (fieldPerms.length > 0) {
@@ -751,13 +707,13 @@
           flsRows.push([f.name.replace(/^[^\.]+\./, ''), f.r ? 'Yes' : 'No', f.e ? 'Yes' : 'No']);
         });
 
-        var sheetName = res.objectName.substring(0, 30); // Excel sheet name limit
+        var sheetName = res.objectName.substring(0, 30);
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(flsRows), sheetName);
       }
     });
 
     XLSX.writeFile(wb, 'salesforce_permissions_matrix.xlsx');
-    toast('Excel Workbook generated!', 'success');
+    toast('Excel Workbook generated successfully!', 'success');
   }
 
   // Global Binding

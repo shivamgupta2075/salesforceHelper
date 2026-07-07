@@ -525,60 +525,30 @@
             <!-- SF PERMISSIONS VIEWER -->
             <div id="app-sfperms" class="hidden">
                 <!-- Connect Panel (shown when not authenticated) -->
-                <section class="section" id="sfpConnectPanel">
-                    <div class="section-header mb-4">
-                        <h2 class="section-title">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="url(#perm-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <defs>
-                                    <linearGradient id="perm-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-                                        <stop stop-color="#6366f1"/>
-                                        <stop offset="1" stop-color="#8b5cf6"/>
-                                    </linearGradient>
-                                </defs>
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                            SF Permissions — Connect to Salesforce
-                        </h2>
-                        <p class="section-subtitle">Analyze object and field permissions for any user in your org</p>
-                    </div>
+                <div class="glass-panel p-6 mb-6" id="sfpConnectPanel">
+    <div class="max-w-md mx-auto text-center py-4">
+        <div class="mb-3" style="font-size: 2.5rem;">⚡</div>
+        <h3 class="font-600 font-xl mb-2 text-primary">Salesforce CLI Authentication</h3>
+        <p class="text-sm text-muted mb-4">
+            Multiple orgs par kaam karne ke liye terminal me <code>sf org display -t &lt;username&gt;</code> chalayein aur details niche paste karein. Org me koi changes nahi chahiye!
+        </p>
+        
+        <div class="flex flex-column gap-3 text-left mb-4" style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
+            <div>
+                <label class="text-xs font-600 text-muted mb-1 block" style="display:block; margin-bottom:4px;">INSTANCE URL</label>
+                <input type="text" class="form-control text-sm w-full" id="sfpManualInstance" placeholder="https://my-company.my.salesforce.com" style="width: 100%; padding: 10px; border-radius: 6px;">
+            </div>
+            <div>
+                <label class="text-xs font-600 text-muted mb-1 block" style="display:block; margin-bottom:4px;">ACCESS TOKEN (SESSION ID)</label>
+                <input type="password" class="form-control text-sm w-full" id="sfpManualToken" placeholder="00D.........." style="width: 100%; padding: 10px; border-radius: 6px;">
+            </div>
+        </div>
 
-                    <div class="sfp-connect-grid">
-                        <!-- OAuth Connect -->
-                        <div class="glass-panel sfp-connect-card">
-                            <h3>🔑 OAuth Login</h3>
-                            <div class="form-group">
-                                <label for="sfpClientId">Connected App Client ID</label>
-                                <input type="text" class="input" id="sfpClientId" placeholder="Consumer Key from your Connected App">
-                            </div>
-                            <div class="toggle-row">
-                                <input type="checkbox" id="sfpSandbox">
-                                <label for="sfpSandbox" style="text-transform:none;font-size:0.85rem;margin-bottom:0;">Sandbox Org</label>
-                            </div>
-                            <button class="btn btn-primary" id="sfpBtnConnect" style="width:100%;margin-top:var(--space-3);">Connect with Salesforce</button>
-                            <div class="sfp-connect-note">
-                                <strong>Prerequisites:</strong> A Connected App with OAuth enabled, callback URL set to <code style="font-size:0.75rem;"><origin>/oauth_callback.html</code>, and this origin added to the CORS allowlist.
-                            </div>
-                        </div>
-
-                        <!-- Manual Token Connect -->
-                        <div class="glass-panel sfp-connect-card">
-                            <h3>🔧 Manual Token</h3>
-                            <div class="form-group">
-                                <label for="sfpManualToken">Access Token</label>
-                                <input type="password" class="input" id="sfpManualToken" placeholder="Paste session ID or access token (sf org display)">
-                            </div>
-                            <div class="form-group">
-                                <label for="sfpManualInstance">Instance URL</label>
-                                <input type="text" class="input" id="sfpManualInstance" placeholder="https://na123.salesforce.com">
-                            </div>
-                            <button class="btn btn-secondary" id="sfpBtnManualConnect" style="width:100%;margin-top:var(--space-3);">Connect</button>
-                            <div class="sfp-connect-note">
-                                <strong>Quick:</strong> Run <code style="font-size:0.75rem;">sf org display</code> in CLI, paste the Access Token and Instance URL above.
-                            </div>
-                        </div>
-                    </div>
-                </section>
+        <button class="btn btn-primary w-full py-3 font-600 text-md" id="sfpBtnManualConnect" style="height: 44px; width: 100%;">
+            Connect to Salesforce Org
+        </button>
+    </div>
+</div>
 
                 <!-- Main Panel (shown after authentication) -->
                 <section class="section hidden" id="sfpMainPanel">
