@@ -863,6 +863,401 @@ body {
 
 .results-section { }
 
+/* ==========================================================
+   § SF PERMISSIONS VIEWER
+   ========================================================== */
+
+/* --- Connect Panel --- */
+.sfp-connect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.sfp-connect-card {
+  padding: var(--space-6);
+}
+
+.sfp-connect-card h3 {
+  margin-bottom: var(--space-4);
+  font-size: 1rem;
+}
+
+.sfp-connect-card .form-group {
+  margin-bottom: var(--space-3);
+}
+
+.sfp-connect-card label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sfp-connect-card .toggle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+}
+
+.sfp-connect-note {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  background: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* --- Auth Bar --- */
+.sfp-auth-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  margin-bottom: var(--space-6);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.sfp-auth-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: 0.85rem;
+}
+
+.sfp-auth-instance {
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+/* --- Analysis Grid (User Picker + Object Picker) --- */
+.sfp-analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.sfp-user-picker {
+  position: relative;
+}
+
+.sfp-user-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown);
+  background: var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-heavy);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.sfp-user-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.sfp-user-result:hover {
+  background: var(--glass-bg-hover);
+}
+
+.sfp-user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sfp-user-username {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.sfp-selected-user {
+  margin-top: var(--space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary-light);
+}
+
+/* --- Object Picker --- */
+.sfp-object-picker {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sfp-object-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg-elevated);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.sfp-object-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-3);
+}
+
+.sfp-obj-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.sfp-obj-check input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}
+
+/* --- Analyze Button --- */
+.sfp-analyze-wrap {
+  text-align: center;
+  margin: var(--space-6) 0;
+}
+
+/* --- Results --- */
+.sfp-results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --- Object Card --- */
+.sfp-obj-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.sfp-obj-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+
+.sfp-obj-card-header:hover {
+  background: var(--glass-bg-hover);
+}
+
+.sfp-obj-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.sfp-obj-card-chevron {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.sfp-obj-card-body {
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.sfp-obj-card-body.hidden {
+  display: none;
+}
+
+.sfp-subtitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+/* --- CRUD Chips --- */
+.sfp-crud-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.sfp-crud-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sfp-perm-yes {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+.sfp-perm-no {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-border);
+}
+
+/* --- Permission Table (CRUD) --- */
+.sfp-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sfp-perm-table th {
+  background: var(--glass-bg-elevated);
+  padding: 8px 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.sfp-perm-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(148,163,184,0.06);
+}
+
+.sfp-perm-table tbody tr:hover {
+  background: var(--glass-bg-hover);
+}
+
+.sfp-perm-table .sfp-perm-yes,
+.sfp-perm-table .sfp-perm-no {
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* --- Source Badges --- */
+.sfp-source-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin: 1px;
+  white-space: nowrap;
+}
+
+.sfp-source-profile {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid var(--color-info-border);
+}
+
+.sfp-source-permset {
+  background: rgba(139,92,246,0.15);
+  color: var(--color-secondary);
+  border: 1px solid rgba(139,92,246,0.3);
+}
+
+.sfp-source-psg {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning-border);
+}
+
+/* --- FLS Section --- */
+.sfp-fls-section {
+  margin-top: var(--space-4);
+}
+
+.sfp-fls-body {
+  margin-top: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sfp-fls-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.sfp-fls-table th {
+  background: var(--glass-bg-elevated);
+  padding: 8px 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.sfp-fls-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(148,163,184,0.05);
+  vertical-align: middle;
+}
+
+.sfp-fls-table tbody tr:hover {
+  background: var(--glass-bg-hover);
+}
+
+.sfp-fls-table .sfp-perm-yes,
+.sfp-fls-table .sfp-perm-no {
+  text-align: center;
+  font-weight: 700;
+}
+
+/* --- Empty State --- */
+.sfp-empty-state {
+  text-align: center;
+  padding: var(--space-10) var(--space-6);
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .sfp-connect-grid { grid-template-columns: 1fr; }
+  .sfp-analysis-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 900px) {
   .grid-2 { grid-template-columns: 1fr; }
   .diffnow-input-grid { grid-template-columns: 1fr; }

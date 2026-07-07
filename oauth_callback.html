@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce OAuth Callback</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #0a0e1a;
+            color: #f8fafc;
+        }
+        .card {
+            text-align: center;
+            padding: 2rem 3rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+        }
+        .card.success { border-color: rgba(16,185,129,0.3); }
+        .card.error   { border-color: rgba(239,68,68,0.3); }
+        .icon { font-size: 3rem; margin-bottom: 1rem; }
+        p { margin: 0.5rem 0; font-size: 0.9rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="card" id="card">
+        <div class="icon" id="icon">⏳</div>
+        <h2 id="title">Completing Authentication…</h2>
+        <p id="message">Please wait while we process your login.</p>
+    </div>
+    <script>
+        (function () {
+            'use strict';
+
+            var card    = document.getElementById('card');
+            var icon    = document.getElementById('icon');
+            var title   = document.getElementById('title');
+            var message = document.getElementById('message');
+
+            /**
+             * Salesforce User-Agent OAuth flow returns the access token in
+             * the URL hash fragment, e.g.:
+             *   #access_token=00D...&refresh_token=...&instance_url=https://...
+             *
+             * We parse it and postMessage to the opener window, then close.
+             */
+            function handleCallback() {
+                var hash = window.location.hash;
+
+                if (!hash || hash.length <= 1) {
+                    showError('No token found in URL. The OAuth flow may have been interrupted.');
+                    return;
+                }
+
+                // Remove leading #
+                var raw = hash.substring(1);
+
+                // Parse into key-value pairs
+                var params = {};
+                var pairs = raw.split('&');
+                for (var i = 0; i < pairs.length; i++) {
+                    var kv = pairs[i].split('=');
+                    if (kv.length >= 2) {
+                        var key = decodeURIComponent(kv[0]);
+                        var val = decodeURIComponent(kv.slice(1).join('='));
+                        params[key] = val;
+                    }
+                }
+
+                var accessToken = params.access_token;
+                var instanceUrl = params.instance_url || 'https://login.salesforce.com';
+
+                if (!accessToken) {
+                    showError('Access token not found in the OAuth response.');
+                    return;
+                }
+
+                // Send token to parent
+                if (window.opener && !window.opener.closed) {
+                    try {
+                        window.opener.postMessage({
+                            source: 'salesforce-helper-oauth',
+                            accessToken: accessToken,
+                            instanceUrl: instanceUrl
+                        }, window.location.origin);
+                    } catch (e) {
+                        // Cross-origin postMessage may fail silently; the opener
+                        // also listens for the hash we pass back via sessionStorage.
+                    }
+                }
+
+                // Fallback: store in sessionStorage so the main app can pick it up
+                try {
+                    sessionStorage.setItem('sfhelper_oauth_token', accessToken);
+                    sessionStorage.setItem('sfhelper_oauth_instance', instanceUrl);
+                } catch (e) {
+                    // Storage may be unavailable
+                }
+
+                // Success UI
+                icon.textContent = '✅';
+                title.textContent = 'Authentication Successful';
+                message.textContent = 'You can close this window. The token has been sent to the app.';
+                card.className = 'card success';
+
+                // Auto-close after 1 second
+                setTimeout(function () {
+                    try { window.close(); } catch (e) { /* ignore */ }
+                }, 1000);
+            }
+
+            function showError(msg) {
+                icon.textContent = '❌';
+                title.textContent = 'Authentication Failed';
+                message.textContent = msg;
+                card.className = 'card error';
+            }
+
+            // Run on load
+            handleCallback();
+        })();
+    </script>
+</body>
+</html>

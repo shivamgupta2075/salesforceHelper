@@ -42,13 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
     Mapper.init();
     if (window.Formatter) Formatter.init();
     if (window.DiffNow) DiffNow.init();
+    if (window.SfPerms) SfPerms.init();
 
     // -- Top Navigation Logic --
     const topNavBtns = document.querySelectorAll('.top-nav-btn');
     const apps = {
         'app-comparator': document.getElementById('app-comparator'),
         'app-formatter': document.getElementById('app-formatter'),
-        'app-diffnow': document.getElementById('app-diffnow')
+        'app-diffnow': document.getElementById('app-diffnow'),
+        'app-sfperms': document.getElementById('app-sfperms')
     };
 
     topNavBtns.forEach(btn => {
